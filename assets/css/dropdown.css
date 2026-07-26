@@ -1,0 +1,52 @@
+/* ==============================
+   DROPDOWN
+================================ */
+
+.dropdown{
+
+    position:relative;
+
+}
+
+.dropdown-menu{
+
+    position:absolute;
+
+    right:0;
+
+    top:110%;
+
+    background:white;
+
+    border-radius:var(--radius);
+
+    min-width:180px;
+
+    box-shadow:var(--shadow);
+
+    display:none;
+
+    overflow:hidden;
+
+    z-index:99;
+}
+
+.dropdown.active .dropdown-menu{
+
+    display:block;
+
+}
+
+.dropdown-menu a{
+
+    display:block;
+
+    padding:12px 18px;
+
+}
+
+.dropdown-menu a:hover{
+
+    background:var(--background);
+
+}

@@ -1,0 +1,85 @@
+/* ===========================================
+   CARD
+   =========================================== */
+
+.card{
+
+    background:white;
+
+    border-radius:var(--radius-lg);
+
+    box-shadow:var(--shadow);
+
+    padding:24px;
+
+}
+
+.card-header{
+
+    margin-bottom:20px;
+
+}
+
+.card-title{
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+.card-body{
+
+    margin-top:16px;
+
+}
+
+.card-footer{
+
+    margin-top:20px;
+
+}
+
+/* Statistic Card */
+
+.stat-card{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.stat-number{
+
+    font-size:34px;
+
+    font-weight:700;
+
+}
+
+.stat-title{
+
+    color:var(--neutral);
+
+}
+
+.stat-icon{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:24px;
+
+}

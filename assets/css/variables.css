@@ -1,0 +1,141 @@
+/* ===========================================
+   CAMPUSHUB DESIGN SYSTEM
+   =========================================== */
+
+:root {
+  /* ========= BRAND COLOR ========= */
+
+  --primary: #1e3a8a;
+  --primary-dark: #172f6e;
+  --primary-light: #dbeafe;
+
+  --secondary: #0d9488;
+  --secondary-dark: #0b7c73;
+  --secondary-light: #ccfbf1;
+
+  --accent: #f59e0b;
+  --accent-dark: #d97706;
+  --accent-light: #fef3c7;
+
+  /* ========= STATUS ========= */
+
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+
+  /* ========= NEUTRAL ========= */
+
+  --white: #ffffff;
+
+  --background: #f8fafc;
+
+  --surface: #ffffff;
+
+  --border: #e2e8f0;
+
+  --neutral: #64748b;
+
+  --text: #1e293b;
+
+  --text-light: #94a3b8;
+
+  /* ========= SHADOW ========= */
+
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
+
+  --shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+
+  /* ========= BORDER ========= */
+
+  --radius-sm: 8px;
+
+  --radius: 12px;
+
+  --radius-lg: 18px;
+
+  /* ========= TRANSITION ========= */
+
+  --transition: 0.3s ease;
+
+  /* ===========================================================
+   COMPATIBILITY LAYER
+   Agar template dashboard lama tetap berjalan
+=========================================================== */
+
+  /* ========= PRIMARY ========= */
+
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-light: var(--primary-light);
+
+  /* ========= SECONDARY ========= */
+
+  --color-secondary: var(--secondary);
+  --color-secondary-dark: var(--secondary-dark);
+  --color-secondary-light: var(--secondary-light);
+
+  /* ========= ACCENT ========= */
+
+  --color-accent-teal: var(--secondary);
+  --color-accent-teal-10: #e6fffa;
+  --color-accent-teal-20: var(--secondary-light);
+
+  --color-accent-amber: var(--accent);
+  --color-accent-amber-10: var(--accent-light);
+
+  /* ========= BACKGROUND ========= */
+
+  --color-bg: var(--background);
+  --color-bg-soft: #f1f5f9;
+  --color-bg-soft-30: #f8fafc;
+
+  /* ========= TEXT ========= */
+
+  --color-text-heading: var(--text);
+  --color-text-body: var(--neutral);
+  --color-text-muted: var(--text-light);
+
+  /* ========= BORDER ========= */
+
+  --color-border: var(--border);
+
+  /* ========= STATUS ========= */
+
+  --color-success: var(--success);
+
+  --color-danger: var(--danger);
+  --color-danger-bg: #fee2e2;
+
+  --color-warning: var(--warning);
+
+  --color-info: var(--info);
+
+  /* ========= WHITE ========= */
+
+  --color-white: var(--white);
+
+  /* ========= SHADOW ========= */
+
+  --shadow-xs: var(--shadow-sm);
+  --shadow-md: var(--shadow);
+  --shadow-lg: var(--shadow-lg);
+
+  /* ========= RADIUS ========= */
+
+  --radius-xs: 6px;
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: 24px;
+
+  /* ========= SIDEBAR ========= */
+
+  --sidebar-width: 280px;
+
+  /* ========= HEADER ========= */
+
+  --topbar-height: 82px;
+}

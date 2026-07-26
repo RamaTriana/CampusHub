@@ -1,0 +1,461 @@
+/* ---------- Top nav bar ---------- 
+  .topbar{
+    height:var(--header-h);
+    background:#fff;
+    border-bottom:1px solid var(--color-border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 32px;
+    position:sticky;
+    top:0;
+    z-index:10;
+    gap:24px;
+  }
+  .topbar .portal-title{
+    font-weight:700;
+    font-size:20px;
+    line-height:28px;
+    color:var(--color-primary);
+    white-space:nowrap;
+  }
+  .search-wrap{
+    flex:1;
+    max-width:576px;
+    position:relative;
+  }
+  .search-wrap input{
+    width:100%;
+    background:var(--color-bg-soft);
+    border:1px solid var(--color-border);
+    border-radius:var(--radius-lg);
+    padding:11px 25px 11px 49px;
+    font-size:16px;
+    font-family:inherit;
+    color:var(--color-text-heading);
+  }
+  .search-wrap input::placeholder{color:var(--color-text-muted);}
+  .search-wrap svg{
+    position:absolute;
+    left:16px;
+    top:50%;
+    transform:translateY(-50%);
+    width:18px;
+    height:18px;
+    color:var(--color-text-muted);
+  }
+  .topbar-actions{display:flex;align-items:center;gap:24px;flex-shrink:0;}
+  .icon-btn{
+    position:relative;
+    background:none;
+    border:none;
+    padding:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:var(--radius-lg);
+    color:var(--color-text-heading);
+  }
+  .icon-btn svg{width:20px;height:20px;}
+  .icon-btn .dot{
+    position:absolute;
+    top:4px;
+    right:4px;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--color-danger);
+  }
+  .user-block{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding-left:25px;
+    border-left:1px solid var(--color-border);
+  }
+  .user-meta{text-align:right;}
+  .user-meta .name{
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:0.6px;
+    color:var(--color-text-heading);
+  }
+  .user-meta .role{
+    font-weight:400;
+    font-size:10px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--color-text-body);
+  }
+  .avatar{
+    width:40px;
+    height:40px;
+    border-radius:var(--radius-lg);
+    border:2px solid var(--color-accent-teal-20);
+    background:var(--color-primary);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:14px;
+  }*/
+
+  .topbar{
+
+    height:82px;
+
+    background:#fff;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 32px;
+
+    border-bottom:1px solid #eef2f7;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:100;
+}
+
+.topbar-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:22px;
+}
+
+.search-box{
+
+    width:420px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    background:#F8FAFC;
+
+    border:1px solid #E2E8F0;
+
+    border-radius:14px;
+
+    padding:13px 18px;
+
+    transition:.3s;
+}
+
+.search-box i{
+
+    color:var(--neutral);
+}
+
+.search-box input{
+
+    flex:1;
+
+    border:none;
+
+    background:none;
+
+    outline:none;
+
+    font-size:15px;
+}
+
+.search-box:focus-within{
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 4px rgba(30,58,138,.10);
+}
+
+.notification-btn{
+
+    width:50px;
+
+    height:50px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:#fff;
+
+    cursor:pointer;
+
+    position:relative;
+
+    transition:.25s;
+
+    box-shadow:0 6px 20px rgba(0,0,0,.05);
+}
+
+.notification-btn:hover{
+
+    background:#EFF6FF;
+
+    color:var(--primary);
+
+    transform:translateY(-2px);
+}
+
+.badge{
+
+    position:absolute;
+
+    top:8px;
+
+    right:8px;
+
+    width:18px;
+
+    height:18px;
+
+    border-radius:50%;
+
+    background:#EF4444;
+
+    color:white;
+
+    font-size:11px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+}
+
+.topbar-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+}
+
+.profile-btn{
+
+    border:none;
+
+    background:none;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    cursor:pointer;
+}
+
+.profile-btn img{
+
+    width:48px;
+
+    height:48px;
+
+    border-radius:50%;
+
+    object-fit:cover;
+}
+
+.profile-info{
+
+    text-align:left;
+}
+
+.profile-info strong{
+
+    display:block;
+
+    font-size:15px;
+}
+
+.profile-info small{
+
+    color:var(--neutral);
+}
+
+.profile-dropdown{
+
+    position:relative;
+}
+
+.dropdown-menu{
+
+    position:absolute;
+
+    right:0;
+
+    top:70px;
+
+    width:240px;
+
+    background:white;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    box-shadow:0 18px 50px rgba(0,0,0,.10);
+
+    display:none;
+
+    animation:fadeDown .25s ease;
+}
+
+.dropdown-menu.show{
+
+    display:block;
+}
+
+.dropdown-menu a{
+
+    display:flex;
+
+    gap:14px;
+
+    padding:16px 20px;
+
+    text-decoration:none;
+
+    color:#334155;
+
+    transition:.25s;
+}
+
+.dropdown-menu a:hover{
+
+    background:#EFF6FF;
+
+    color:var(--primary);
+}
+
+@keyframes fadeDown{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(-12px);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:none;
+    }
+
+}
+
+.sidebar-toggle{
+
+    display:none;
+
+    width:46px;
+
+    height:46px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:white;
+
+    cursor:pointer;
+
+    box-shadow:0 5px 20px rgba(0,0,0,.05);
+}
+
+@media(max-width:992px){
+
+    .sidebar-toggle{
+
+        display:flex;
+
+        justify-content:center;
+
+        align-items:center;
+    }
+
+    .search-box{
+
+        width:100%;
+    }
+
+}
+
+.profile-btn img{
+
+    transition:.35s;
+}
+
+.profile-btn:hover img{
+
+    transform:scale(1.08);
+
+    box-shadow:0 10px 25px rgba(30,58,138,.20);
+}
+
+.search-box{
+
+    transition:.35s;
+}
+
+.search-box:hover{
+
+    transform:translateY(-2px);
+}
+
+.notification-btn:hover i{
+
+    animation:ring .45s;
+}
+
+@keyframes ring{
+
+0%{
+
+transform:rotate(0);
+
+}
+
+25%{
+
+transform:rotate(18deg);
+
+}
+
+50%{
+
+transform:rotate(-18deg);
+
+}
+
+75%{
+
+transform:rotate(10deg);
+
+}
+
+100%{
+
+transform:none;
+
+}
+
+}
+

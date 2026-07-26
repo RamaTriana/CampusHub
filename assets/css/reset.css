@@ -1,0 +1,81 @@
+/* ===========================================
+   RESET
+   =========================================== */
+
+*,
+*::before,
+*::after{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+
+    background:var(--background);
+
+    color:var(--text);
+
+    line-height:1.6;
+
+    font-size:16px;
+
+}
+
+img{
+
+    max-width:100%;
+
+    display:block;
+
+}
+
+a{
+
+    text-decoration:none;
+
+    color:inherit;
+
+}
+
+ul{
+
+    list-style:none;
+
+}
+
+button{
+
+    cursor:pointer;
+
+    border:none;
+
+    outline:none;
+
+    background:none;
+
+}
+
+input,
+textarea,
+select{
+
+    border:none;
+
+    outline:none;
+
+    font-family:inherit;
+
+}
+
+table{
+
+    border-collapse:collapse;
+
+}

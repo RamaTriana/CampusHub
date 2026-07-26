@@ -1,0 +1,23 @@
+/* ==============================
+   FOOTER
+================================ */
+
+.footer{
+
+    background:white;
+
+    border-top:1px solid var(--border);
+
+    padding:18px 30px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    color:var(--neutral);
+
+    font-size:14px;
+
+}

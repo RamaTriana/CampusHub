@@ -1,0 +1,32 @@
+/* ==============================
+   ALERT
+================================ */
+
+.alert{
+    width:100%;
+    padding:14px 18px;
+    border-radius:var(--radius);
+    margin-bottom:20px;
+    font-size:14px;
+    font-weight:500;
+}
+
+.alert-success{
+    background:#DCFCE7;
+    color:#166534;
+}
+
+.alert-danger{
+    background:#FEE2E2;
+    color:#991B1B;
+}
+
+.alert-warning{
+    background:#FEF3C7;
+    color:#92400E;
+}
+
+.alert-info{
+    background:#DBEAFE;
+    color:#1D4ED8;
+}

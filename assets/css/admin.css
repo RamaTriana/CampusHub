@@ -1,0 +1,42 @@
+/* ---------- Layout shell ---------- 
+  .app{
+    display:flex;
+    min-height:100vh;
+  }
+
+  /* ---------- Main column ---------- 
+  .main-col{flex:1;min-width:0;display:flex;flex-direction:column;}
+
+  /* ---------- Scrollable content ---------- 
+  .content{
+    flex:1;
+    padding:32px;
+    display:flex;
+    justify-content:center;
+  }
+  .container{
+    width:100%;
+    max-width:1440px;
+    display:flex;
+    flex-direction:column;
+    gap:32px;
+  }*/
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.admin-main {
+  flex: 1;
+  margin-left: 280px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.dashboard-content {
+  flex: 1;
+  padding: 32px;
+}

@@ -1,0 +1,66 @@
+/* ==============================
+   MODAL
+================================ */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:999;
+}
+
+.modal.show{
+
+    display:flex;
+
+}
+
+.modal-content{
+
+    background:white;
+
+    width:450px;
+
+    max-width:90%;
+
+    border-radius:var(--radius-lg);
+
+    box-shadow:var(--shadow-lg);
+
+    overflow:hidden;
+}
+
+.modal-header{
+
+    padding:20px;
+
+    border-bottom:1px solid var(--border);
+
+}
+
+.modal-body{
+
+    padding:24px;
+
+}
+
+.modal-footer{
+
+    padding:20px;
+
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:10px;
+
+    border-top:1px solid var(--border);
+
+}

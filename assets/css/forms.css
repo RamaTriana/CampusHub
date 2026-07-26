@@ -1,0 +1,67 @@
+/* ===========================================
+   FORM
+   =========================================== */
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-weight: 600;
+}
+
+.form-control {
+  width: 100%;
+
+  height: 44px;
+  font-size: 15px;
+  border: 1px solid var(--border);
+
+  border-radius: var(--radius);
+
+  padding: 0 16px;
+
+  background: white;
+
+  transition: var(--transition);
+}
+
+.password-group .form-control {
+  padding-right: 50px;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+}
+
+textarea.form-control {
+  min-height: 140px;
+
+  resize: vertical;
+
+  padding: 16px;
+}
+
+select.form-control {
+  cursor: pointer;
+}
+
+.form-error {
+  color: var(--danger);
+
+  font-size: 13px;
+
+  margin-top: 5px;
+}
+
+.form-help {
+  color: var(--neutral);
+
+  font-size: 13px;
+}

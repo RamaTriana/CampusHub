@@ -1,0 +1,110 @@
+/* ===========================================
+   BUTTONS
+   =========================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  padding: 12px 22px;
+
+  border: none;
+
+  border-radius: var(--radius);
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: var(--transition);
+
+  user-select: none;
+}
+
+/* Primary */
+
+.btn-primary {
+  background: var(--primary);
+
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+/* Secondary */
+
+.btn-secondary {
+  background: var(--secondary);
+
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: var(--secondary-dark);
+}
+
+/* Warning */
+
+.btn-warning {
+  background: var(--accent);
+
+  color: white;
+}
+
+.btn-warning:hover {
+  background: var(--accent-dark);
+}
+
+/* Danger */
+
+.btn-danger {
+  background: var(--danger);
+
+  color: white;
+}
+
+/* Outline */
+
+.btn-outline {
+  border: 2px solid var(--primary);
+
+  color: var(--primary);
+
+  background: white;
+}
+
+.btn-outline:hover {
+  background: var(--primary);
+
+  color: white;
+}
+
+/* Success */
+
+.btn-success {
+  background: var(--success);
+
+  color: white;
+}
+
+.btn-sm {
+  padding: 8px 16px;
+
+  font-size: 14px;
+}
+
+.btn-lg {
+  padding: 14px 28px;
+
+  font-size: 16px;
+}
+
+.btn-block {
+  width: 100%;
+}

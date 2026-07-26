@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap");
+
+@import url("variables.css");
+
+@import url("reset.css");
+
+@import url("typography.css");
+
+@import url("utilities.css");
+
+@import url("buttons.css");
+@import url("forms.css");
+@import url("cards.css");
+@import url("badges.css");
+@import url("tables.css");
+
+@import url("alerts.css");
+@import url("modal.css");
+@import url("dropdown.css");
+
+@import url("navbar.css");
+@import url("sidebar.css");
+@import url("footer.css");
+@import url("dashboard.css");
+@import url("responsive.css");
+
+@import url("components.css");

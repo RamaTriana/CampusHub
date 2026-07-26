@@ -1,0 +1,57 @@
+/* ===========================================
+   BADGE
+   =========================================== */
+
+.badge{
+
+    display:inline-block;
+
+    padding:6px 12px;
+
+    border-radius:50px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.badge-primary{
+
+    background:var(--primary-light);
+
+    color:var(--primary);
+
+}
+
+.badge-success{
+
+    background:#DCFCE7;
+
+    color:var(--success);
+
+}
+
+.badge-danger{
+
+    background:#FEE2E2;
+
+    color:var(--danger);
+
+}
+
+.badge-warning{
+
+    background:#FEF3C7;
+
+    color:#B45309;
+
+}
+
+.badge-secondary{
+
+    background:#CCFBF1;
+
+    color:var(--secondary);
+
+}
