@@ -4,6 +4,7 @@
 <head>
 
     <?php
+    require_once __DIR__ . '/guard.php';
 
     if (!isset($pageTitle)) {
         $pageTitle = "CampusHub";
@@ -32,7 +33,7 @@
 
     <link
         rel="icon"
-        href="assets/img/logo.png">
+        href="/public/assets/images/logo.png">
 
     <!-- Font Awesome -->
 
@@ -59,7 +60,7 @@
 
     <link
         rel="stylesheet"
-        href="<?= BASE_URL ?>/css/style.css">
+        href="/public/assets/css/style.css">
 
     <!-- Page CSS -->
 
@@ -69,10 +70,10 @@
 
         if (is_array($pageCSS)) {
             foreach ($pageCSS as $css) {
-                echo '<link rel="stylesheet" href="'.BASE_URL.'/assets/css/' . $css . '">';
+                echo '<link rel="stylesheet" href="/public/assets/css/' . $css . '">';
             }
         } else {
-            echo '<link rel="stylesheet" href="assets/css/' . $pageCSS . '">';
+            echo '<link rel="stylesheet" href="/public/assets/css/' . $pageCSS . '">';
 }
 
 

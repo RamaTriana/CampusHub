@@ -32,6 +32,7 @@ CREATE TABLE users (
 CREATE TABLE kategori_event (
     id_kategori INT AUTO_INCREMENT PRIMARY KEY,
     nama_kategori VARCHAR(100) NOT NULL,
+    deskripsi TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -123,6 +124,8 @@ CREATE TABLE sertifikat (
     id_kehadiran INT NOT NULL UNIQUE,
 
     file_sertifikat VARCHAR(255) NOT NULL,
+
+    status ENUM('Terbit','Dicabut') NOT NULL DEFAULT 'Terbit',
 
     tanggal_upload TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

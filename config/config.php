@@ -39,7 +39,7 @@ define('UPLOAD_SERTIFIKAT', UPLOAD_PATH . 'sertifikat/');
 |--------------------------------------------------------------------------
 */
 
-define('IMAGE_PATH', 'assets/img/');
+define('IMAGE_PATH', 'public/assets/images/');
 define('DEFAULT_PROFILE', IMAGE_PATH . 'default-avatar.png');
 
 /*

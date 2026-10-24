@@ -1,171 +1,127 @@
-<!-- ===== Sidebar =====
-  <aside class="sidebar" id="sidebar">
-    <div>
-      <div class="brand">
-        <h1>CampusHub</h1>
-        <p>Admin Portal</p>
-      </div>
-      <nav class="nav">
-        <a href="#" class="nav-link active">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
-          <span>Statistics</span>
-        </a>
-        <a href="#" class="nav-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span>Users</span>
-        </a>
-        <a href="#" class="nav-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
-          <span>Organizations</span>
-        </a>
-        <a href="#" class="nav-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-          <span>Committees</span>
-        </a>
-        <a href="#" class="nav-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-          <span>Events</span>
-        </a>
-        <a href="#" class="nav-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12.99V2h10.99l8.6 8.59a2 2 0 0 1 0 2.82Z"/><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor" stroke="none"/></svg>
-          <span>Categories</span>
-        </a>
-        <a href="#" class="nav-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
-          <span>Settings</span>
-        </a>
-      </nav>
-    </div>
- 
-    <div class="sidebar-footer">
-      <button class="btn-create">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>
-        Create New Event
-      </button>
-      <button class="link-logout">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Logout
-      </button>
-    </div>
-  </aside> -->
-  <aside class="sidebar" id="sidebar">
+<?php
 
-    <div class="sidebar-header">
+require_once dirname(__DIR__) . '/guard.php';
 
-        <a href="<?= BASE_URL ?>/admin/dashboard.php" class="sidebar-brand">
+$adminName = is_string($userName ?? null) && trim($userName) !== '' ? trim($userName) : 'Admin';
+$currentPath = parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH);
+$currentPath = is_string($currentPath) ? $currentPath : '/';
+$activeAdminSection = is_string($activeAdminSection ?? null)
+    ? $activeAdminSection
+    : match (true) {
+        str_starts_with($currentPath, '/admin/event') => 'event',
+        str_starts_with($currentPath, '/admin/kategori') => 'kategori',
+        str_starts_with($currentPath, '/admin/organisasi') => 'organisasi',
+        str_starts_with($currentPath, '/admin/users') => 'users',
+        str_starts_with($currentPath, '/admin/participants') => 'participants',
+        str_starts_with($currentPath, '/admin/documentation') => 'documentation',
+        str_starts_with($currentPath, '/admin/certificates') => 'certificates',
+        str_starts_with($currentPath, '/admin/reports') => 'reports',
+        str_starts_with($currentPath, '/admin/settings') => 'settings',
+        default => 'dashboard',
+    };
+?>
 
-            <img
-                src="<?= BASE_URL ?>/assets/img/logo.png"
-                alt="CampusHub Logo">
+<aside class="ch-sidebar" aria-label="Navigasi admin">
+    <a class="ch-brand" href="/admin/dashboard" aria-label="CampusHub, dashboard admin">
+        <img src="/public/assets/images/logo.png" alt="" width="44" height="44">
+        <span>
+            <strong>CampusHub</strong>
+            <small>Ruang administrasi</small>
+        </span>
+    </a>
 
-            <div>
-
-                <h2>CampusHub</h2>
-
-                <span>Admin Portal</span>
-
-            </div>
-
-        </a>
-
-    </div>
-
-    <nav class="sidebar-menu">
-
-        <a href="dashboard.php" class="menu-item active">
-
-            <i class="fa-solid fa-house"></i>
-
+    <p class="ch-nav-label">MENU</p>
+    <nav class="ch-nav" aria-label="Menu admin">
+        <a class="ch-nav-link<?= $activeAdminSection === 'dashboard' ? ' is-active' : '' ?>"
+            href="/admin/dashboard" <?= $activeAdminSection === 'dashboard' ? ' aria-current="page"' : '' ?>>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+            </svg>
             <span>Dashboard</span>
-
         </a>
-
-        <a href="<?= BASE_URL ?>/admin/users/" class="menu-item">
-
-            <i class="fa-solid fa-users"></i>
-
-            <span>Users</span>
-
+        <a class="ch-nav-link<?= $activeAdminSection === 'event' ? ' is-active' : '' ?>"
+            href="/admin/event/" <?= $activeAdminSection === 'event' ? ' aria-current="page"' : '' ?>>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+                <path d="M16 3v4M8 3v4M3 10h18"></path>
+            </svg>
+            <span>Event</span>
         </a>
-
-        <a href="<?= BASE_URL ?>/admin/organisasi/" class="menu-item">
-
-            <i class="fa-solid fa-building"></i>
-
-            <span>Organizations</span>
-
+        <a class="ch-nav-link<?= $activeAdminSection === 'kategori' ? ' is-active' : '' ?>"
+            href="/admin/kategori/" <?= $activeAdminSection === 'kategori' ? ' aria-current="page"' : '' ?>>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 5h7v7H4zM13 5h7v7h-7zM4 14h7v6H4zM13 14h7v6h-7z"></path>
+            </svg>
+            <span>Kategori</span>
         </a>
-
-        <a href="<?= BASE_URL ?>/admin/kategori/" class="menu-item">
-
-            <i class="fa-solid fa-layer-group"></i>
-
-            <span>Categories</span>
-
+        <a class="ch-nav-link<?= $activeAdminSection === 'organisasi' ? ' is-active' : '' ?>"
+            href="/admin/organisasi/" <?= $activeAdminSection === 'organisasi' ? ' aria-current="page"' : '' ?>>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 21h18M5 21V7l7-4 7 4v14M9 10h.01M15 10h.01M9 14h.01M15 14h.01M10 21v-4h4v4"></path>
+            </svg>
+            <span>Organisasi</span>
         </a>
-
-        <a href="<?= BASE_URL ?>/admin/event/" class="menu-item">
-
-            <i class="fa-solid fa-calendar-days"></i>
-
-            <span>Events</span>
-
+        <a class="ch-nav-link<?= $activeAdminSection === 'users' ? ' is-active' : '' ?>"
+            href="/admin/users" <?= $activeAdminSection === 'users' ? ' aria-current="page"' : '' ?>>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>User</span>
         </a>
-
-        <a href="<?= BASE_URL ?>/admin/peserta/" class="menu-item">
-
-            <i class="fa-solid fa-user-graduate"></i>
-
-            <span>Participants</span>
-
+        <a class="ch-nav-link<?= $activeAdminSection === 'participants' ? ' is-active' : '' ?>"
+            href="/admin/participants" <?= $activeAdminSection === 'participants' ? ' aria-current="page"' : '' ?>>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path>
+            </svg>
+            <span>Peserta</span>
         </a>
-
-        <a href="<?= BASE_URL ?>/admin/dokumentasi/" class="menu-item">
-
-            <i class="fa-solid fa-images"></i>
-
-            <span>Documentation</span>
-
+        <a class="ch-nav-link<?= $activeAdminSection === 'documentation' ? ' is-active' : '' ?>"
+            href="/admin/documentation" <?= $activeAdminSection === 'documentation' ? ' aria-current="page"' : '' ?>>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <path d="m21 15-5-5L5 21"></path>
+            </svg>
+            <span>Dokumentasi</span>
         </a>
-
-        <a href="<?= BASE_URL ?>/admin/sertifikat/" class="menu-item">
-
-            <i class="fa-solid fa-award"></i>
-
-            <span>Certificates</span>
-
+        <a class="ch-nav-link<?= $activeAdminSection === 'certificates' ? ' is-active' : '' ?>"
+            href="/admin/certificates" <?= $activeAdminSection === 'certificates' ? ' aria-current="page"' : '' ?>>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="8" r="6"></circle>
+                <path d="m8.2 13.8-1.2 9 5-3 5 3-1.2-9"></path>
+            </svg>
+            <span>Sertifikat</span>
         </a>
-
-        <a href="<?= BASE_URL ?>/admin/laporan/" class="menu-item">
-
-            <i class="fa-solid fa-chart-column"></i>
-
-            <span>Reports</span>
-
+        <a class="ch-nav-link<?= $activeAdminSection === 'reports' ? ' is-active' : '' ?>"
+            href="/admin/reports" <?= $activeAdminSection === 'reports' ? ' aria-current="page"' : '' ?>>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 3v18h18M7 14l4-4 4 4 6-7"></path>
+            </svg>
+            <span>Laporan</span>
         </a>
-
+        <a class="ch-nav-link<?= $activeAdminSection === 'settings' ? ' is-active' : '' ?>"
+            href="/admin/settings/" <?= $activeAdminSection === 'settings' ? ' aria-current="page"' : '' ?>>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"></path>
+            </svg>
+            <span>Settings</span>
+        </a>
     </nav>
 
-    <div class="sidebar-footer">
-
-        <a href="#" class="menu-item">
-
-            <i class="fa-solid fa-gear"></i>
-
-            <span>Settings</span>
-
+    <div class="ch-sidebar-bottom">
+        <p>Akun aktif</p>
+        <strong><?= \CampusHub\Core\View::escape($adminName) ?></strong>
+        <span>Administrator</span>
+        <a class="ch-logout-link" href="/logout.php">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M10 17l5-5-5-5M15 12H3M21 3v18"></path>
+            </svg>
+            Keluar
         </a>
-
-        <a
-            href="<?= BASE_URL ?>/logout.php"
-            class="menu-item logout">
-
-            <i class="fa-solid fa-right-from-bracket"></i>
-
-            <span>Logout</span>
-
-        </a>
-
     </div>
-
 </aside>

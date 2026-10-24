@@ -1,9 +1,6 @@
-<!-- Footer -->
-    <footer class="site-footer">
-      <p>© 2026 CampusHub</p>
-      <div class="footer-links">
-        <a href="#">Contact Support</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-      </div>
-    </footer>
+<?php require_once dirname(__DIR__) . '/guard.php'; ?>
+
+<footer class="ch-page-footer">
+    <span>CampusHub</span>
+    <span>Portal administrasi kampus</span>
+</footer>
