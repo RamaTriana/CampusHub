@@ -13,6 +13,9 @@ $photoUrl = in_array($photoFile, ['default.png', 'default-avatar.png'], true)
 ?>
 
 <header class="ch-topbar">
+    <button class="ch-mobile-menu-toggle" type="button" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="ch-sidebar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
     <div>
         <span class="ch-eyebrow">CAMPUSHUB / ADMIN</span>
         <p>Portal administrasi</p>

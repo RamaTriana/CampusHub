@@ -252,13 +252,13 @@
   background: rgba(255, 254, 250, 0.86);
 }
 
-.ch-topbar > div:first-child,
+.ch-topbar > div:not(.ch-topbar-user),
 .ch-committee-header > div {
   display: grid;
   gap: 3px;
 }
 
-.ch-topbar > div:first-child p,
+.ch-topbar > div:not(.ch-topbar-user) p,
 .ch-committee-header p {
   color: var(--ch-ink);
   font-size: 0.9rem;
@@ -907,7 +907,8 @@
   margin-top: 24px;
 }
 
-.ch-admin-page .btn {
+.ch-admin-page .btn,
+.ch-committee-shortcuts .btn {
   min-height: 40px;
   height: auto;
   padding: 9px 16px;
@@ -919,31 +920,37 @@
   box-shadow: none;
 }
 
-.ch-admin-page .btn-primary {
+.ch-admin-page .btn-primary,
+.ch-committee-shortcuts .btn-primary {
   color: #fff;
   background: var(--ch-teal-dark);
 }
 
-.ch-admin-page .btn-primary:hover {
+.ch-admin-page .btn-primary:hover,
+.ch-committee-shortcuts .btn-primary:hover {
   background: #084f4a;
 }
 
-.ch-admin-page .btn-warning {
+.ch-admin-page .btn-warning,
+.ch-committee-shortcuts .btn-warning {
   color: var(--ch-teal-dark);
   background: var(--ch-teal-pale);
 }
 
-.ch-admin-page .btn-warning:hover {
+.ch-admin-page .btn-warning:hover,
+.ch-committee-shortcuts .btn-warning:hover {
   background: #d7ebe0;
 }
 
-.ch-admin-page .btn-outline {
+.ch-admin-page .btn-outline,
+.ch-committee-shortcuts .btn-outline {
   border: 1px solid #cbd6ce;
   color: var(--ch-ink-soft);
   background: transparent;
 }
 
-.ch-admin-page .btn-outline:hover {
+.ch-admin-page .btn-outline:hover,
+.ch-committee-shortcuts .btn-outline:hover {
   color: var(--ch-ink);
   background: #f1f4ee;
 }
@@ -1225,6 +1232,117 @@
 .ch-student-empty p {
   max-width: 690px;
   font-size: 0.86rem;
+}
+
+.ch-student-event-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ch-student-event-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--ch-line);
+  border-radius: 9px;
+  background: var(--ch-white);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.ch-student-event-card:hover,
+.ch-student-event-card:focus-within {
+  transform: translateY(-3px);
+  border-color: #bfd6cb;
+  box-shadow: 0 14px 30px rgba(23, 47, 69, 0.09);
+}
+
+.ch-student-event-card-media {
+  display: block;
+  height: 190px;
+  overflow: hidden;
+  background: #e8f0e8;
+}
+
+.ch-student-event-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 260ms ease;
+}
+
+.ch-student-event-card:hover .ch-student-event-card-media img {
+  transform: scale(1.035);
+}
+
+.ch-student-event-card-media .ch-student-poster-placeholder {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  border: 0;
+  border-radius: 0;
+  color: var(--ch-teal-dark);
+  background: linear-gradient(135deg, #e6f0e8, #eee6d7);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.03em;
+}
+
+.ch-student-event-card-body {
+  display: grid;
+  min-height: 190px;
+  gap: 10px;
+  padding: 17px;
+}
+
+.ch-student-event-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 5px 10px;
+  color: var(--ch-muted);
+  font-size: 0.7rem;
+}
+
+.ch-student-event-card-meta span:first-child {
+  color: var(--ch-teal-dark);
+  font-weight: 700;
+}
+
+.ch-student-event-card h3 {
+  color: var(--ch-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.26rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.ch-student-event-card h3 a:hover {
+  color: var(--ch-teal-dark);
+}
+
+.ch-student-event-card-body > p {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--ch-ink-soft);
+  font-size: 0.81rem;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.ch-student-event-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--ch-line);
+}
+
+.ch-student-event-card-footer > span {
+  color: var(--ch-muted);
+  font-size: 0.72rem;
 }
 
 .ch-page-footer--student {
@@ -1569,6 +1687,236 @@
   font-size: 0.7rem;
 }
 
+.ch-committee-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.ch-committee-detail-card {
+  display: grid;
+  gap: 24px;
+}
+
+.ch-committee-event-poster {
+  width: min(100%, 720px);
+  max-height: 390px;
+  border: 1px solid var(--ch-line);
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.ch-committee-event-details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+
+.ch-committee-event-details div {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--ch-line);
+  border-radius: 7px;
+  background: var(--ch-paper);
+}
+
+.ch-committee-event-details dt {
+  color: var(--ch-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.ch-committee-event-details dd {
+  margin: 4px 0 0;
+  color: var(--ch-ink);
+  font-weight: 600;
+}
+
+.ch-committee-event-description h2,
+.ch-committee-upload-card h2 {
+  margin-bottom: 9px;
+  color: var(--ch-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.ch-committee-event-description p {
+  white-space: normal;
+}
+
+.ch-committee-attendance-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 13px;
+  margin-bottom: 18px;
+}
+
+.ch-committee-attendance-summary article {
+  display: grid;
+  gap: 3px;
+  padding: 16px 18px;
+  border: 1px solid var(--ch-line);
+  border-radius: 8px;
+  background: var(--ch-white);
+}
+
+.ch-committee-attendance-summary span {
+  color: var(--ch-ink-soft);
+  font-size: 0.8rem;
+}
+
+.ch-committee-attendance-summary strong {
+  color: var(--ch-teal-dark);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.55rem;
+  font-weight: 500;
+}
+
+.ch-committee-upload-card {
+  margin-bottom: 20px;
+}
+
+.ch-committee-doc-form,
+.ch-committee-doc-edit {
+  display: grid;
+  gap: 12px;
+}
+
+.ch-committee-doc-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ch-committee-doc-form label,
+.ch-committee-doc-edit label {
+  display: grid;
+  gap: 5px;
+  color: var(--ch-ink-soft);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.ch-committee-doc-form .btn {
+  justify-self: start;
+  align-self: end;
+}
+
+.ch-committee-doc-edit {
+  min-width: 240px;
+}
+
+.ch-committee-doc-thumb {
+  width: 110px;
+  height: 76px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.ch-committee-documentation-table {
+  min-width: 980px !important;
+}
+
+.ch-student-event-table {
+  min-width: 850px !important;
+}
+
+.ch-student-event-cell {
+  display: flex;
+  min-width: 210px;
+  align-items: center;
+  gap: 10px;
+}
+
+.ch-student-event-cell img,
+.ch-student-poster-placeholder {
+  width: 52px;
+  height: 42px;
+  flex: 0 0 auto;
+  border: 1px solid var(--ch-line);
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.ch-student-poster-placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--ch-teal-dark);
+  background: var(--ch-teal-pale);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.ch-student-event-detail {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.5fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.ch-student-detail-poster {
+  width: 100%;
+  max-height: 520px;
+  border: 1px solid var(--ch-line);
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.ch-student-detail-information {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+
+.ch-student-registration-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ch-line);
+}
+
+.ch-student-registration-action > span,
+.ch-student-registration-state span {
+  color: var(--ch-muted);
+  font-size: 0.78rem;
+}
+
+.ch-student-registration-state {
+  display: grid;
+  gap: 2px;
+}
+
+.ch-student-profile-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 25px;
+}
+
+.ch-student-profile-heading .ch-profile-photo {
+  width: 72px;
+  height: 72px;
+}
+
+.ch-student-profile-heading div {
+  display: grid;
+  gap: 2px;
+}
+
+.ch-student-profile-heading strong {
+  color: var(--ch-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.ch-student-profile-heading span {
+  color: var(--ch-muted);
+  font-size: 0.8rem;
+}
+
 .ch-committee-empty {
   display: flex;
   align-items: center;
@@ -1606,6 +1954,24 @@
   border: 1px solid var(--ch-line);
   border-radius: 8px;
   background: var(--ch-white);
+}
+
+.ch-committee-event-thumbnail {
+  width: 120px;
+  height: 88px;
+  flex: 0 0 auto;
+  border: 1px solid var(--ch-line);
+  border-radius: 7px;
+  object-fit: cover;
+}
+
+.ch-committee-event-description-preview {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 8px !important;
+  font-size: 0.78rem;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .ch-committee-event-main {
@@ -1775,6 +2141,16 @@
   }
 
   .ch-committee-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ch-committee-event-details,
+  .ch-committee-doc-form,
+  .ch-student-event-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .ch-committee-attendance-summary {
     grid-template-columns: 1fr;
   }
 
@@ -1994,7 +2370,8 @@
 
   .ch-module-grid,
   .ch-operations-grid,
-  .ch-committee-panels {
+  .ch-committee-panels,
+  .ch-student-event-cards {
     grid-template-columns: 1fr;
   }
 
@@ -2027,6 +2404,20 @@
   }
 
   .ch-committee-event {
+    padding: 15px;
+  }
+
+  .ch-committee-event-thumbnail {
+    width: 92px;
+    height: 74px;
+  }
+
+  .ch-student-event-card-media {
+    height: 170px;
+  }
+
+  .ch-student-event-card-body {
+    min-height: 0;
     padding: 15px;
   }
 
@@ -2142,6 +2533,240 @@
   .ch-dashboard *::before,
   .ch-dashboard *::after {
     scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.ch-mobile-menu-toggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--ch-line);
+  border-radius: 7px;
+  color: var(--ch-ink);
+  background: var(--ch-white);
+  cursor: pointer;
+}
+
+.ch-mobile-menu-toggle svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.ch-sidebar-backdrop {
+  display: none;
+}
+
+.ch-attendance-picker fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ch-attendance-picker legend.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.ch-attendance-choice {
+  position: relative;
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  border: 1px solid var(--ch-line);
+  border-radius: 999px;
+  color: var(--ch-ink-soft);
+  background: var(--ch-white);
+  cursor: pointer;
+  font-size: 0.76rem;
+  font-weight: 650;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.ch-attendance-choice::before {
+  width: 10px;
+  height: 10px;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  content: "";
+}
+
+.ch-attendance-choice input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ch-attendance-choice--present:has(input:checked) {
+  border-color: #a8d6bf;
+  color: #146443;
+  background: #e8f5ed;
+}
+
+.ch-attendance-choice--absent:has(input:checked) {
+  border-color: #e6b9ad;
+  color: #914b3f;
+  background: #fbefec;
+}
+
+.ch-attendance-choice:has(input:focus-visible) {
+  outline: 3px solid rgba(19, 124, 114, 0.26);
+  outline-offset: 2px;
+}
+
+.ch-committee-certificate-form {
+  display: grid;
+  min-width: 190px;
+  gap: 9px;
+}
+
+.ch-committee-certificate-form label {
+  display: grid;
+  gap: 4px;
+  color: var(--ch-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.ch-committee-certificate-form .form-control {
+  min-width: 0;
+  padding: 8px;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 900px) {
+  .ch-mobile-menu-toggle {
+    display: grid;
+  }
+
+  .ch-topbar {
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .ch-topbar-user {
+    margin-left: auto;
+  }
+
+  .ch-sidebar {
+    position: fixed;
+    z-index: 1200;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    width: min(86vw, 320px);
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    flex: none;
+    overflow: auto;
+    padding: 22px 18px 16px;
+    transform: translateX(-105%);
+    visibility: hidden;
+    box-shadow: 15px 0 45px rgba(23, 47, 69, 0.12);
+    transition: transform 180ms ease, visibility 180ms ease;
+  }
+
+  .ch-sidebar.is-open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .ch-sidebar .ch-brand {
+    margin: 0 0 30px 4px;
+  }
+
+  .ch-sidebar .ch-nav-label {
+    margin-top: 0 !important;
+  }
+
+  .ch-sidebar .ch-nav {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+    margin-top: 0;
+    overflow: auto;
+    padding: 0 3px 10px 0;
+  }
+
+  .ch-sidebar .ch-nav-link {
+    min-height: 46px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .ch-sidebar .ch-nav-link svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ch-sidebar .ch-sidebar-bottom {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 12px;
+    margin-top: auto;
+    padding: 16px 8px 0;
+  }
+
+  .ch-sidebar .ch-sidebar-bottom p,
+  .ch-sidebar .ch-sidebar-bottom > span {
+    display: block;
+  }
+
+  .ch-sidebar .ch-sidebar-bottom strong {
+    grid-column: 1;
+  }
+
+  .ch-sidebar .ch-logout-link {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    margin: 13px -8px 0;
+    padding: 12px 8px;
+    border-top: 1px solid var(--ch-line);
+  }
+
+  .ch-sidebar-backdrop:not([hidden]) {
+    position: fixed;
+    z-index: 1190;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: rgba(15, 30, 43, 0.48);
+    cursor: pointer;
+  }
+
+  body.ch-menu-open {
+    overflow: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ch-sidebar,
+  .ch-attendance-choice {
     transition-duration: 0.01ms !important;
   }
 }

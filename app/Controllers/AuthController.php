@@ -216,10 +216,22 @@ final class AuthController extends Controller
         return Response::redirect('/login');
     }
 
+
     public function confirmLogout(Request $request): Response
     {
-        return $this->view('auth/logout');
+        $destination = GuestMiddleware::destinationForRole(
+            $request->session('role')
+        );
+
+        if ($destination === '/login') {
+            return Response::redirect('/login');
+        }
+
+        return $this->view('auth/logout', [
+            'backUrl' => $destination,
+        ]);
     }
+
 
     private function postString(Request $request, string $key): string
     {

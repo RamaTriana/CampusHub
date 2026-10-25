@@ -9,7 +9,7 @@
 <body>
     <main class="container" style="max-width: 720px; margin: 4rem auto; padding: 2rem;">
         <h1><?= \CampusHub\Core\View::escape($title ?? 'CampusHub') ?></h1>
-        <p>Fondasi routing MVC aktif. Halaman PHP Native lama tetap tersedia.</p>
+        <p>Fondasi routing MVC aktif. Halaman PHP Nativ.</p>
         <nav aria-label="Autentikasi">
             <a href="/login">Login</a>
             <span aria-hidden="true"> · </span>

@@ -27,14 +27,7 @@ $exportQuery = http_build_query(array_filter($filters, static fn (string $value)
             <td><?= \CampusHub\Core\View::escape($registration['nama']) ?><br><small><?= \CampusHub\Core\View::escape($registration['nim'] ?: $registration['email']) ?></small></td>
             <td><?= \CampusHub\Core\View::escape($registration['judul']) ?><br><small>Event <?= \CampusHub\Core\View::escape($registration['tanggal_event']) ?></small></td>
             <td><?= \CampusHub\Core\View::escape($registration['tanggal_daftar']) ?></td>
-            <td>
-                <form class="ch-admin-inline-form" method="post" action="/admin/participants/status">
-                    <?= \CampusHub\Core\View::csrfField() ?><input type="hidden" name="id" value="<?= (int) $registration['id_pendaftaran'] ?>">
-                    <select name="status" aria-label="Status pendaftaran peserta <?= \CampusHub\Core\View::escape($registration['nama']) ?>">
-                        <?php foreach ([STATUS_PENDING, STATUS_APPROVED, STATUS_REJECTED] as $option) : ?><option value="<?= \CampusHub\Core\View::escape($option) ?>" <?= $registration['status'] === $option ? 'selected' : '' ?>><?= \CampusHub\Core\View::escape($option) ?></option><?php endforeach; ?>
-                    </select><button class="btn btn-primary btn-sm" type="submit">Simpan</button>
-                </form>
-            </td>
+            <td><?= \CampusHub\Core\View::escape($registration['status']) ?></td>
             <td><?= \CampusHub\Core\View::escape($registration['status_hadir']) ?><?= $registration['waktu_checkin'] ? '<br><small>' . \CampusHub\Core\View::escape($registration['waktu_checkin']) . '</small>' : '' ?></td>
         </tr><?php endforeach; endif; ?>
         </tbody>

@@ -62,6 +62,16 @@ final class Session
         }
     }
 
+    public static function updateProfile(string $name, string $email, ?string $photo = null): void
+    {
+        self::ensureActive();
+        $_SESSION['nama'] = $name;
+        $_SESSION['email'] = $email;
+        if ($photo !== null) {
+            $_SESSION['foto'] = $photo;
+        }
+    }
+
     public static function flash(string $type, string $message): void
     {
         self::ensureActive();

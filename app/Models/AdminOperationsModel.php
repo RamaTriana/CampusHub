@@ -234,70 +234,46 @@ final class AdminOperationsModel
         )->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function updateRegistrationStatus(int $registrationId, string $status): string
-    {
-        $this->connection->begin_transaction();
-
-        try {
-            $result = PreparedQuery::execute($this->connection, 
-                'SELECT p.id_event, p.status, e.kuota
-                 FROM pendaftaran p
-                 INNER JOIN event e ON e.id_event = p.id_event
-                 WHERE p.id_pendaftaran = ? FOR UPDATE',
-                [$registrationId]
-            );
-            $registration = $result->fetch_assoc();
-
-            if (!is_array($registration)) {
-                $this->connection->rollback();
-                return 'not_found';
-            }
-
-            if ($status === STATUS_APPROVED && $registration['status'] !== STATUS_APPROVED) {
-                $eventId = (int) $registration['id_event'];
-                PreparedQuery::execute($this->connection, 
-                    'SELECT id_event FROM event WHERE id_event = ? FOR UPDATE',
-                    [$eventId]
-                );
-                $count = PreparedQuery::execute($this->connection, 
-                    'SELECT COUNT(*) AS total FROM pendaftaran
-                     WHERE id_event = ? AND status = ?',
-                    [$eventId, STATUS_APPROVED]
-                )->fetch_assoc();
-
-                if ((int) $count['total'] >= (int) $registration['kuota']) {
-                    $this->connection->rollback();
-                    return 'capacity';
-                }
-            }
-
-            PreparedQuery::execute($this->connection, 
-                'UPDATE pendaftaran SET status = ? WHERE id_pendaftaran = ?',
-                [$status, $registrationId]
-            );
-            $this->connection->commit();
-
-            return 'updated';
-        } catch (\Throwable $exception) {
-            $this->connection->rollback();
-            throw $exception;
-        }
-    }
-
-    public function documentation(array $filters): array
+    public function documentation(array $filters, int $limit, int $offset): array
     {
         [$where, $values] = $this->relatedDateFilterSql('d.created_at', $filters, 'e.id_event');
-
-        return PreparedQuery::execute($this->connection, 
+        $countResult = PreparedQuery::execute(
+            $this->connection,
+            'SELECT COUNT(*) AS total
+             FROM dokumentasi d
+             INNER JOIN event e ON e.id_event = d.id_event
+             INNER JOIN users u ON u.id_user = e.id_panitia'
+                . $where,
+            $values
+        );
+        $total = (int) $countResult->fetch_assoc()['total'];
+        $statement = $this->connection->prepare(
             'SELECT d.id_dokumentasi, d.id_event, d.foto, d.keterangan, d.created_at,
                     e.judul, u.nama AS nama_panitia
              FROM dokumentasi d
              INNER JOIN event e ON e.id_event = d.id_event
              INNER JOIN users u ON u.id_user = e.id_panitia'
                 . $where .
-            ' ORDER BY d.created_at DESC, d.id_dokumentasi DESC',
+            ' ORDER BY d.created_at DESC, d.id_dokumentasi DESC LIMIT ? OFFSET ?'
+        );
+        $values[] = $limit;
+        $values[] = $offset;
+        $types = implode('', array_map(
+            static fn (mixed $value): string => is_int($value) ? 'i' : 's',
             $values
-        )->fetch_all(MYSQLI_ASSOC);
+        ));
+        $this->bind($statement, $types, $values);
+
+        try {
+            $statement->execute();
+
+            return [
+                'items' => $statement->get_result()->fetch_all(MYSQLI_ASSOC),
+                'total' => $total,
+            ];
+        } finally {
+            $statement->close();
+        }
     }
 
     public function deleteDocumentation(int $id): ?string
@@ -320,7 +296,7 @@ final class AdminOperationsModel
         return basename((string) $record['foto']);
     }
 
-    public function certificates(array $filters): array
+    public function certificates(array $filters, int $limit, int $offset): array
     {
         [$where, $values] = $this->relatedDateFilterSql('s.tanggal_upload', $filters, 'e.id_event');
         $status = $filters['status'] ?? '';
@@ -338,56 +314,43 @@ final class AdminOperationsModel
             array_push($values, $term, $term, $term);
         }
 
-        return PreparedQuery::execute($this->connection,
-            'SELECT s.id_sertifikat, s.file_sertifikat, s.status, s.tanggal_upload,
-                    u.nama, u.nim, u.email, e.id_event, e.judul,
-                    k.status_hadir, k.waktu_checkin
+        $joins = '
              FROM sertifikat s
              INNER JOIN kehadiran k ON k.id_kehadiran = s.id_kehadiran
              INNER JOIN pendaftaran p ON p.id_pendaftaran = k.id_pendaftaran
              INNER JOIN users u ON u.id_user = p.id_user
-             INNER JOIN event e ON e.id_event = p.id_event'
-                . $where .
-            ' ORDER BY s.tanggal_upload DESC, s.id_sertifikat DESC',
+             INNER JOIN event e ON e.id_event = p.id_event';
+        $countResult = PreparedQuery::execute(
+            $this->connection,
+            'SELECT COUNT(*) AS total' . $joins . $where,
             $values
-        )->fetch_all(MYSQLI_ASSOC);
-    }
-
-    public function revokeCertificate(int $id): array
-    {
-        $this->connection->begin_transaction();
+        );
+        $total = (int) $countResult->fetch_assoc()['total'];
+        $statement = $this->connection->prepare(
+            'SELECT s.id_sertifikat, s.file_sertifikat, s.status, s.tanggal_upload, s.skkm_points,
+                    u.nama, u.nim, u.email, e.id_event, e.judul,
+                    k.status_hadir, k.waktu_checkin
+                ' . $joins
+                . $where .
+            ' ORDER BY s.tanggal_upload DESC, s.id_sertifikat DESC LIMIT ? OFFSET ?'
+        );
+        $values[] = $limit;
+        $values[] = $offset;
+        $types = implode('', array_map(
+            static fn (mixed $value): string => is_int($value) ? 'i' : 's',
+            $values
+        ));
+        $this->bind($statement, $types, $values);
 
         try {
-            $certificate = PreparedQuery::execute(
-                $this->connection,
-                'SELECT file_sertifikat, status FROM sertifikat WHERE id_sertifikat = ? FOR UPDATE',
-                [$id]
-            )->fetch_assoc();
-
-            if (!is_array($certificate)) {
-                $this->connection->rollback();
-                return ['status' => 'not_found', 'filename' => null];
-            }
-
-            if ($certificate['status'] === 'Dicabut') {
-                $this->connection->rollback();
-                return ['status' => 'already_revoked', 'filename' => null];
-            }
-
-            PreparedQuery::execute(
-                $this->connection,
-                'UPDATE sertifikat SET status = ? WHERE id_sertifikat = ?',
-                ['Dicabut', $id]
-            );
-            $this->connection->commit();
+            $statement->execute();
 
             return [
-                'status' => 'revoked',
-                'filename' => basename((string) $certificate['file_sertifikat']),
+                'items' => $statement->get_result()->fetch_all(MYSQLI_ASSOC),
+                'total' => $total,
             ];
-        } catch (\Throwable $exception) {
-            $this->connection->rollback();
-            throw $exception;
+        } finally {
+            $statement->close();
         }
     }
 

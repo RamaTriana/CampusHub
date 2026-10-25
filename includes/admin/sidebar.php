@@ -21,7 +21,7 @@ $activeAdminSection = is_string($activeAdminSection ?? null)
     };
 ?>
 
-<aside class="ch-sidebar" aria-label="Navigasi admin">
+<aside class="ch-sidebar" id="ch-sidebar" aria-label="Navigasi admin">
     <a class="ch-brand" href="/admin/dashboard" aria-label="CampusHub, dashboard admin">
         <img src="/public/assets/images/logo.png" alt="" width="44" height="44">
         <span>

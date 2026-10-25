@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use CampusHub\Controllers\HomeController;
 use CampusHub\Controllers\AuthController;
+use CampusHub\Controllers\CertificateController;
 use CampusHub\Controllers\AdminController;
 use CampusHub\Controllers\AdminCategoryController;
 use CampusHub\Controllers\AdminEventController;
@@ -28,11 +29,9 @@ return static function (Router $router): void {
     $router->post('/admin/users/perbarui', [AdminOperationsController::class, 'updateUser'], $adminWriteMiddleware);
     $router->get('/admin/participants', [AdminOperationsController::class, 'participants'], $adminMiddleware);
     $router->get('/admin/participants/export', [AdminOperationsController::class, 'exportParticipants'], $adminMiddleware);
-    $router->post('/admin/participants/status', [AdminOperationsController::class, 'updateParticipant'], $adminWriteMiddleware);
     $router->get('/admin/documentation', [AdminOperationsController::class, 'documentation'], $adminMiddleware);
     $router->post('/admin/documentation/hapus', [AdminOperationsController::class, 'deleteDocumentation'], $adminWriteMiddleware);
     $router->get('/admin/certificates', [AdminOperationsController::class, 'certificates'], $adminMiddleware);
-    $router->post('/admin/certificates/cabut', [AdminOperationsController::class, 'revokeCertificate'], $adminWriteMiddleware);
     $router->get('/admin/reports', [AdminOperationsController::class, 'reports'], $adminMiddleware);
     $router->get('/admin/reports/export', [AdminOperationsController::class, 'exportReports'], $adminMiddleware);
     $router->get('/admin/settings', [AdminOperationsController::class, 'settings'], $adminMiddleware);
@@ -70,8 +69,36 @@ return static function (Router $router): void {
     $router->post('/admin/event/hapus', [AdminEventController::class, 'delete'], $eventWriteMiddleware);
     $router->get('/committee/dashboard', $committeeDashboard, ['auth', ['role', ROLE_COMMITTEE]]);
     $router->get('/committee/dashboard.php', $committeeDashboard, ['auth', ['role', ROLE_COMMITTEE]]);
+    $committeeController = [CommitteeController::class, 'events'];
+    $committeeMiddleware = ['auth', ['role', ROLE_COMMITTEE]];
+    $committeeWriteMiddleware = ['auth', ['role', ROLE_COMMITTEE], 'csrf'];
+    $router->get('/committee/events', $committeeController, $committeeMiddleware);
+    $router->get('/committee/events/detail', [CommitteeController::class, 'eventDetail'], $committeeMiddleware);
+    $router->get('/committee/participants', [CommitteeController::class, 'participants'], $committeeMiddleware);
+    $router->get('/committee/participants/export', [CommitteeController::class, 'exportParticipants'], $committeeMiddleware);
+    $router->get('/committee/attendance', [CommitteeController::class, 'attendance'], $committeeMiddleware);
+    $router->post('/committee/attendance/update', [CommitteeController::class, 'updateAttendance'], $committeeWriteMiddleware);
+    $router->get('/committee/documentation', [CommitteeController::class, 'documentation'], $committeeMiddleware);
+    $router->post('/committee/documentation/save', [CommitteeController::class, 'saveDocumentation'], $committeeWriteMiddleware);
+    $router->post('/committee/documentation/delete', [CommitteeController::class, 'deleteDocumentation'], $committeeWriteMiddleware);
+    $router->get('/committee/certificates', [CommitteeController::class, 'certificates'], $committeeMiddleware);
+    $router->post('/committee/certificates/issue', [CommitteeController::class, 'issueCertificate'], $committeeWriteMiddleware);
+    $router->get('/committee/profile', [CommitteeController::class, 'profile'], $committeeMiddleware);
+    $router->post('/committee/profile', [CommitteeController::class, 'updateProfile'], $committeeWriteMiddleware);
     $router->get('/student/dashboard', $studentDashboard, ['auth', ['role', ROLE_STUDENT]]);
     $router->get('/student/dashboard.php', $studentDashboard, ['auth', ['role', ROLE_STUDENT]]);
+    $studentController = [StudentController::class, 'events'];
+    $studentMiddleware = ['auth', ['role', ROLE_STUDENT]];
+    $studentWriteMiddleware = ['auth', ['role', ROLE_STUDENT], 'csrf'];
+    $router->get('/student/events', $studentController, $studentMiddleware);
+    $router->get('/student/events/detail', [StudentController::class, 'eventDetail'], $studentMiddleware);
+    $router->post('/student/registration/create', [StudentController::class, 'register'], $studentWriteMiddleware);
+    $router->get('/student/registrations', [StudentController::class, 'registrations'], $studentMiddleware);
+    $router->post('/student/registration/cancel', [StudentController::class, 'cancelRegistration'], $studentWriteMiddleware);
+    $router->get('/student/schedule', [StudentController::class, 'schedule'], $studentMiddleware);
+    $router->get('/student/certificates', [StudentController::class, 'certificates'], $studentMiddleware);
+    $router->get('/student/profile', [StudentController::class, 'profile'], $studentMiddleware);
+    $router->post('/student/profile', [StudentController::class, 'updateProfile'], $studentWriteMiddleware);
 
     $router->get('/login', [AuthController::class, 'showLogin'], ['guest']);
     $router->get('/login.php', [AuthController::class, 'showLogin'], ['guest']);
@@ -85,6 +112,10 @@ return static function (Router $router): void {
 
     $router->post('/logout', [AuthController::class, 'logout'], ['auth', 'csrf']);
     $router->get('/logout.php', [AuthController::class, 'confirmLogout'], ['auth']);
+    $router->get('/certificates/download', [CertificateController::class, 'download'], [
+        'auth',
+        ['role', ROLE_ADMIN, ROLE_COMMITTEE, ROLE_STUDENT],
+    ]);
 
-    $router->get('/', [HomeController::class, 'index']);
+    $router->get('/', [AuthController::class, 'showLogin'], ['guest']);
 };

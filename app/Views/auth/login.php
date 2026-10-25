@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Login | CampusHub</title>
-    <link rel="icon" href="/public/assets/images/logo.png">
+    <link rel="icon" type="image/png" href="/public/assets/images/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,6 +14,7 @@
     <link rel="stylesheet" href="/public/assets/css/style.css">
     <link rel="stylesheet" href="/public/assets/css/login.css">
 </head>
+
 <body>
     <div class="bg-circle bg-circle-1"></div>
     <div class="bg-circle bg-circle-2"></div>
@@ -115,4 +117,5 @@
 
     <script src="/public/assets/js/login.js"></script>
 </body>
+
 </html>

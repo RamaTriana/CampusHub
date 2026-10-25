@@ -71,7 +71,11 @@ final class CommitteeDashboardModel
     private function events(int $committeeId): array
     {
         $statement = $this->connection->prepare(
-            'SELECT e.id_event, e.judul, e.tanggal, e.jam, e.lokasi, e.status,
+            'SELECT e.id_event, e.judul, e.deskripsi, e.poster, e.tanggal, e.jam, e.lokasi, e.status,
+                o.nama_organisasi,
+                (SELECT COUNT(*)
+                 FROM pendaftaran p
+                 WHERE p.id_event = e.id_event) AS total_registrations,
                 (SELECT COUNT(*)
                  FROM pendaftaran p
                  WHERE p.id_event = e.id_event
@@ -90,7 +94,9 @@ final class CommitteeDashboardModel
                  WHERE p.id_event = e.id_event
                    AND s.status = \'Terbit\') AS certificates
              FROM event e
+             INNER JOIN organisasi o ON o.id_organisasi = e.id_organisasi
              WHERE e.id_panitia = ?
+               AND e.tanggal >= CURRENT_DATE()
              ORDER BY
                 CASE e.status WHEN \'Publish\' THEN 0 WHEN \'Draft\' THEN 1 ELSE 2 END,
                 CASE WHEN e.status = \'Selesai\' THEN e.tanggal END DESC,
@@ -112,7 +118,19 @@ final class CommitteeDashboardModel
             );
             $statement->execute();
 
-            return $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+            $events = $statement->get_result()->fetch_all(MYSQLI_ASSOC);
+            $posterDirectory = dirname(__DIR__, 2) . '/assets/uploads/poster';
+            foreach ($events as &$event) {
+                $filename = basename((string) ($event['poster'] ?? ''));
+                $event['poster_url'] = $filename !== ''
+                    && preg_match('/\A[a-zA-Z0-9._-]+\.(?:jpg|jpeg|png)\z/i', $filename) === 1
+                    && is_file($posterDirectory . DIRECTORY_SEPARATOR . $filename)
+                    ? '/assets/uploads/poster/' . rawurlencode($filename)
+                    : null;
+            }
+            unset($event);
+
+            return $events;
         } finally {
             $statement->close();
         }

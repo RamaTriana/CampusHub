@@ -7,6 +7,7 @@ RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,END,NC]
 # Keep application internals and local configuration files out of public URLs.
 RewriteRule ^(?:app|config|configs|includes|routes|tests)(?:/|$) - [F,END,NC]
 RewriteRule ^(?:database\.sql|\.env(?:\..*)?|composer\.(?:json|lock))$ - [F,END,NC]
+RewriteRule ^assets/uploads/sertifikat(?:/|$) - [F,END,NC]
 
 # Jika file atau folder memang ada, biarkan Apache melayaninya.
 RewriteCond %{REQUEST_FILENAME} -f [OR]

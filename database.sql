@@ -13,7 +13,7 @@ CREATE TABLE users (
     id_user INT AUTO_INCREMENT PRIMARY KEY,
     id_organisasi INT NULL,
     nama VARCHAR(100) NOT NULL,
-    nim VARCHAR(20) DEFAULT NULL,
+    nim VARCHAR(20) DEFAULT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -83,7 +83,7 @@ CREATE TABLE pendaftaran (
     id_event INT NOT NULL,
     id_user INT NOT NULL,
 
-    status ENUM('Menunggu','Disetujui','Ditolak') DEFAULT 'Menunggu',
+    status ENUM('Menunggu','Disetujui','Ditolak') DEFAULT 'Disetujui',
 
     tanggal_daftar TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -126,6 +126,8 @@ CREATE TABLE sertifikat (
     file_sertifikat VARCHAR(255) NOT NULL,
 
     status ENUM('Terbit','Dicabut') NOT NULL DEFAULT 'Terbit',
+
+    skkm_points DECIMAL(8,2) NOT NULL DEFAULT 0,
 
     tanggal_upload TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 

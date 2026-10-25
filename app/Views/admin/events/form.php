@@ -104,6 +104,7 @@ require dirname(__DIR__, 4) . '/includes/admin/layout-start.php';
                                 </option>
                             <?php endforeach; ?>
                         </select>
+                        <small class="form-help">Panitia dipilih untuk event ini secara spesifik. Keanggotaan organisasi saja tidak otomatis memberikan akses kepanitiaan.</small>
                     </div>
 
                     <div class="form-group">

@@ -186,33 +186,6 @@ final class AdminOperationsController extends Controller
         ]);
     }
 
-    public function updateParticipant(Request $request): Response
-    {
-        $id = $this->positiveId($request->post('id'));
-        $status = $request->post('status');
-        if ($id === null || !in_array($status, [STATUS_PENDING, STATUS_APPROVED, STATUS_REJECTED], true)) {
-            Flash::set('Danger', 'Perubahan status pendaftaran tidak valid.');
-            return Response::redirect('/admin/participants');
-        }
-
-        try {
-            $result = (new AdminOperationsModel())->updateRegistrationStatus($id, $status);
-        } catch (mysqli_sql_exception | RuntimeException $exception) {
-            $this->logFailure($exception);
-            Flash::set('Danger', 'Status pendaftaran tidak dapat diperbarui.');
-            return Response::redirect('/admin/participants');
-        }
-
-        [$type, $message] = match ($result) {
-            'updated' => ['Success', 'Status pendaftaran berhasil diperbarui.'],
-            'capacity' => ['Warning', 'Kuota event sudah penuh; pendaftaran tidak dapat disetujui.'],
-            default => ['Danger', 'Pendaftaran tidak ditemukan.'],
-        };
-        Flash::set($type, $message);
-
-        return Response::redirect('/admin/participants');
-    }
-
     public function documentation(Request $request): Response
     {
         $model = $this->model();
@@ -221,9 +194,10 @@ final class AdminOperationsController extends Controller
         }
 
         $filters = $this->relatedFilters($request);
+        $page = $this->pageNumber($request->input('page'));
 
         try {
-            $items = $model->documentation($filters);
+            $result = $model->documentation($filters, 25, ($page - 1) * 25);
             $events = $model->eventOptions();
         } catch (mysqli_sql_exception | RuntimeException $exception) {
             $this->logFailure($exception);
@@ -231,7 +205,10 @@ final class AdminOperationsController extends Controller
         }
 
         return $this->view('admin/operations/documentation', $this->layoutData($request, 'documentation') + [
-            'items' => $items,
+            'items' => $result['items'],
+            'total' => $result['total'],
+            'page' => $page,
+            'pages' => max(1, (int) ceil($result['total'] / 25)),
             'filters' => $filters,
             'events' => $events,
             'flash' => Flash::pull(),
@@ -276,9 +253,10 @@ final class AdminOperationsController extends Controller
         $filters = $this->relatedFilters($request) + [
             'status' => $this->queryString($request, 'status'),
         ];
+        $page = $this->pageNumber($request->input('page'));
 
         try {
-            $items = $model->certificates($filters);
+            $result = $model->certificates($filters, 25, ($page - 1) * 25);
             $events = $model->eventOptions();
         } catch (mysqli_sql_exception | RuntimeException $exception) {
             $this->logFailure($exception);
@@ -286,47 +264,14 @@ final class AdminOperationsController extends Controller
         }
 
         return $this->view('admin/operations/certificates', $this->layoutData($request, 'certificates') + [
-            'items' => $items,
+            'items' => $result['items'],
+            'total' => $result['total'],
+            'page' => $page,
+            'pages' => max(1, (int) ceil($result['total'] / 25)),
             'filters' => $filters,
             'events' => $events,
             'flash' => Flash::pull(),
         ]);
-    }
-
-    public function revokeCertificate(Request $request): Response
-    {
-        $id = $this->positiveId($request->post('id'));
-        if ($id === null) {
-            return Response::text('Sertifikat tidak ditemukan.', 404);
-        }
-
-        try {
-            $result = (new AdminOperationsModel())->revokeCertificate($id);
-        } catch (mysqli_sql_exception | RuntimeException $exception) {
-            $this->logFailure($exception);
-            Flash::set('Danger', 'Sertifikat tidak dapat dicabut.');
-            return Response::redirect('/admin/certificates');
-        }
-
-        if ($result['status'] === 'not_found') {
-            return Response::text('Sertifikat tidak ditemukan.', 404);
-        }
-
-        if ($result['status'] === 'already_revoked') {
-            Flash::set('Warning', 'Sertifikat sudah dicabut sebelumnya.');
-            return Response::redirect('/admin/certificates');
-        }
-
-        $filename = (string) $result['filename'];
-        if (preg_match('/\A[a-zA-Z0-9._-]+\.pdf\z/i', $filename) === 1) {
-            $path = dirname(__DIR__, 2) . '/assets/uploads/sertifikat/' . $filename;
-            if (is_file($path) && !unlink($path)) {
-                error_log('CampusHub certificate file cleanup failed.');
-            }
-        }
-        Flash::set('Success', 'Sertifikat berhasil dicabut.');
-
-        return Response::redirect('/admin/certificates');
     }
 
     public function reports(Request $request): Response

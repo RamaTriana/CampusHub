@@ -41,7 +41,15 @@ $assert = static function (bool $condition, string $name) use (&$passed, &$faile
 
 $makeRouter = static function (): Router {
     $router = new Router();
-    $router->registerMiddleware('auth', static fn () => new \CampusHub\Http\Middleware\AuthMiddleware());
+    $router->registerMiddleware(
+        'auth',
+        static fn () => new \CampusHub\Http\Middleware\AuthMiddleware(
+            static fn (int $userId, Request $request): array => [
+                'role' => $request->session('role'),
+                'status' => STATUS_ACTIVE,
+            ]
+        )
+    );
     $router->registerMiddleware('guest', static fn () => new \CampusHub\Http\Middleware\GuestMiddleware());
     $router->registerMiddleware(
         'role',
@@ -145,7 +153,11 @@ $unknownRoleResponse = $router->dispatch(new Request(
     [],
     ['is_login' => true, 'user_id' => 15, 'role' => 'Unknown']
 ));
-$assert($unknownRoleResponse->status() === 403, 'role middleware denies unknown role');
+$assert(
+    $unknownRoleResponse->status() === 302
+        && ($unknownRoleResponse->headers()['Location'] ?? '') === '/login',
+    'auth middleware redirects accounts with unknown roles to login'
+);
 
 $router = $makeRouter();
 $router->post('/submit', $handler, ['csrf']);
@@ -244,7 +256,11 @@ $categoryUnknownRole = $authRouter->dispatch(new Request(
     [],
     ['is_login' => true, 'user_id' => 3, 'role' => 'Unknown']
 ));
-$assert($categoryUnknownRole->status() === 403, 'category routes deny unknown roles');
+$assert(
+    $categoryUnknownRole->status() === 302
+        && ($categoryUnknownRole->headers()['Location'] ?? '') === '/login',
+    'category routes redirect accounts with unknown roles to login'
+);
 $categoryCreateForm = $authRouter->dispatch(new Request(
     'GET',
     '/admin/kategori/tambah',
@@ -384,7 +400,11 @@ $organizationUnknownRole = $authRouter->dispatch(new Request(
     [],
     ['is_login' => true, 'user_id' => 3, 'role' => 'Unknown']
 ));
-$assert($organizationUnknownRole->status() === 403, 'organization routes deny unknown roles');
+$assert(
+    $organizationUnknownRole->status() === 302
+        && ($organizationUnknownRole->headers()['Location'] ?? '') === '/login',
+    'organization routes redirect accounts with unknown roles to login'
+);
 $organizationCreateForm = $authRouter->dispatch(new Request(
     'GET',
     '/admin/organisasi/tambah',
@@ -900,7 +920,11 @@ $eventUnknownRole = $eventRouter->dispatch(new Request(
     [],
     ['is_login' => true, 'user_id' => 3, 'role' => 'Unknown']
 ));
-$assert($eventUnknownRole->status() === 403, 'event routes deny unknown roles');
+$assert(
+    $eventUnknownRole->status() === 302
+        && ($eventUnknownRole->headers()['Location'] ?? '') === '/login',
+    'event routes redirect accounts with unknown roles to login'
+);
 $invalidEventEdit = $eventRouter->dispatch(new Request(
     'GET',
     '/admin/event/edit?id=invalid',
@@ -987,14 +1011,130 @@ $committeeDashboard = $dashboardRouter->dispatch(new Request(
 $assert(
     $committeeDashboard->status() === 200
         && str_contains($committeeDashboard->body(), 'committee-overview-title')
-        && str_contains($committeeDashboard->body(), 'Event yang ditugaskan')
+        && str_contains($committeeDashboard->body(), 'Event mendatang')
         && str_contains($committeeDashboard->body(), 'Dokumentasi terbaru')
         && str_contains($committeeDashboard->body(), 'Progres check-in')
         && str_contains($committeeDashboard->body(), 'Peserta hari ini')
         && str_contains($committeeDashboard->body(), 'Ringkasan dan progres di atas dihitung')
+        && str_contains($committeeDashboard->body(), 'href="/committee/events"')
+        && str_contains($committeeDashboard->body(), 'href="/committee/participants"')
+        && str_contains($committeeDashboard->body(), 'href="/committee/attendance"')
+        && str_contains($committeeDashboard->body(), 'href="/committee/documentation"')
+        && str_contains($committeeDashboard->body(), 'href="/committee/certificates"')
+        && str_contains($committeeDashboard->body(), 'href="/committee/profile"')
         && str_contains($committeeDashboard->body(), '/public/assets/css/dashboard-portals.css'),
-    'committee dashboard renders database-backed operational summary panels'
+    'committee dashboard renders scoped operations, shared navigation, and database-backed summary'
 );
+$committeeSidebar = file_get_contents(dirname(__DIR__) . '/includes/committee/sidebar.php');
+$committeeRoutes = file_get_contents(dirname(__DIR__) . '/routes/web.php');
+$committeeOperationsModel = file_get_contents(dirname(__DIR__) . '/app/Models/CommitteeOperationsModel.php');
+$assert(
+    is_string($committeeSidebar)
+        && is_string($committeeRoutes)
+        && is_string($committeeOperationsModel)
+        && str_contains($committeeSidebar, 'Dashboard Panitia')
+        && str_contains($committeeSidebar, 'Event Saya')
+        && str_contains($committeeSidebar, 'Peserta')
+        && str_contains($committeeSidebar, 'Kehadiran')
+        && str_contains($committeeSidebar, 'Dokumentasi')
+        && str_contains($committeeSidebar, 'Sertifikat')
+        && str_contains($committeeSidebar, 'Profil')
+        && str_contains($committeeRoutes, "'/committee/attendance/update'")
+        && str_contains($committeeRoutes, "'/committee/documentation/save'")
+        && str_contains($committeeRoutes, "'/committee/profile'")
+        && str_contains($committeeOperationsModel, 'e.id_panitia = ?')
+        && str_contains($committeeOperationsModel, 'WHERE p.id_pendaftaran = ? AND e.id_panitia = ?'),
+    'Committee navigation and operations are routed and scoped to the assigned organizer'
+);
+$committeeEventList = $dashboardRouter->dispatch(new Request(
+    'GET',
+    '/committee/events',
+    [],
+    [],
+    array_replace($dashboardSessions[ROLE_COMMITTEE], ['user_id' => 2147483647])
+));
+$committeeEventsTemplate = file_get_contents(dirname(__DIR__) . '/app/Views/committee/events.php');
+$committeeOperationsSource = file_get_contents(dirname(__DIR__) . '/app/Models/CommitteeOperationsModel.php');
+$assert(
+    $committeeEventList->status() === 200
+        && str_contains($committeeEventList->body(), 'Keanggotaan organisasi saja tidak memberikan akses')
+        && is_string($committeeEventsTemplate)
+        && str_contains($committeeEventsTemplate, 'Halaman event panitia')
+        && is_string($committeeOperationsSource)
+        && str_contains($committeeOperationsSource, 'LIMIT ? OFFSET ?'),
+    'committee event list explains assignment scope and includes pagination'
+);
+$committeeForeignEvent = $dashboardRouter->dispatch(new Request(
+    'GET',
+    '/committee/events/detail?id=1',
+    [],
+    [],
+    array_replace($dashboardSessions[ROLE_COMMITTEE], ['user_id' => 2147483647])
+));
+$assert(
+    $committeeForeignEvent->status() === 404,
+    'committee cannot open an event that is not assigned to the current account'
+);
+$adminSearchInjection = $dashboardRouter->dispatch(new Request(
+    'GET',
+    '/admin/participants',
+    ['q' => "' OR 1=1 --"],
+    [],
+    $dashboardSessions[ROLE_ADMIN]
+));
+$assert(
+    $adminSearchInjection->status() === 200
+        && str_contains($adminSearchInjection->body(), '&#039; OR 1=1 --'),
+    'Admin participant search safely handles SQL-like input and escapes the displayed filter'
+);
+$adminSearchXss = $dashboardRouter->dispatch(new Request(
+    'GET',
+    '/admin/participants',
+    ['q' => '<script>alert(1)</script>'],
+    [],
+    $dashboardSessions[ROLE_ADMIN]
+));
+$assert(
+    $adminSearchXss->status() === 200
+        && str_contains($adminSearchXss->body(), '&lt;script&gt;alert(1)&lt;/script&gt;')
+        && !str_contains($adminSearchXss->body(), '<script>alert(1)</script>'),
+    'Admin participant search escapes reflected HTML input'
+);
+$studentDashboardTemplate = file_get_contents(dirname(__DIR__) . '/app/Views/dashboard/student.php');
+$studentOperationsSource = file_get_contents(dirname(__DIR__) . '/app/Models/StudentOperationsModel.php');
+$assert(
+    is_string($studentDashboardTemplate)
+        && is_string($studentOperationsSource)
+        && str_contains($studentDashboardTemplate, 'ch-student-event-cards')
+        && str_contains($studentDashboardTemplate, 'poster_url')
+        && str_contains($studentDashboardTemplate, 'deskripsi')
+        && str_contains($studentOperationsSource, "'available_only' => true"),
+    'Student dashboard shows database-backed event posters/descriptions and only events with open slots'
+);
+$committeeProtectedPaths = [
+    '/committee/events',
+    '/committee/events/detail',
+    '/committee/participants',
+    '/committee/participants/export',
+    '/committee/attendance',
+    '/committee/documentation',
+    '/committee/certificates',
+    '/committee/profile',
+];
+foreach ($committeeProtectedPaths as $path) {
+    $committeeRoleGuard = $dashboardRouter->dispatch(new Request(
+        'GET',
+        $path,
+        [],
+        [],
+        $dashboardSessions[ROLE_ADMIN]
+    ));
+    $assert(
+        $committeeRoleGuard->status() === 302
+            && ($committeeRoleGuard->headers()['Location'] ?? '') === '/admin/dashboard',
+        'Admin cannot enter Committee-only route: ' . $path
+    );
+}
 
 foreach ($dashboardPaths as $role => $paths) {
     $guestDashboard = $dashboardRouter->dispatch(new Request('GET', $paths[0]));
@@ -1043,7 +1183,11 @@ $invalidRoleDashboard = $dashboardRouter->dispatch(new Request(
     [],
     ['is_login' => true, 'user_id' => 4, 'role' => 'Unknown']
 ));
-$assert($invalidRoleDashboard->status() === 403, 'dashboard route rejects an unknown role');
+$assert(
+    $invalidRoleDashboard->status() === 302
+        && ($invalidRoleDashboard->headers()['Location'] ?? '') === '/login',
+    'dashboard route redirects accounts with unknown roles to login'
+);
 foreach ([ROLE_COMMITTEE => '/committee/dashboard', ROLE_STUDENT => '/student/dashboard'] as $path) {
     $invalidRoleResponse = $dashboardRouter->dispatch(new Request(
         'GET',
@@ -1052,7 +1196,11 @@ foreach ([ROLE_COMMITTEE => '/committee/dashboard', ROLE_STUDENT => '/student/da
         [],
         ['is_login' => true, 'user_id' => 5, 'role' => 'Unknown']
     ));
-    $assert($invalidRoleResponse->status() === 403, 'dashboard route rejects unknown role at ' . $path);
+    $assert(
+        $invalidRoleResponse->status() === 302
+            && ($invalidRoleResponse->headers()['Location'] ?? '') === '/login',
+        'dashboard route redirects accounts with unknown roles to login at ' . $path
+    );
 }
 
 $adminDashboardHtml = $dashboardRouter->dispatch(new Request(
@@ -1084,7 +1232,7 @@ $assert(
 foreach ([
     ROLE_STUDENT => [
         '/student/dashboard',
-        'Cari Event Kampus Favoritmu',
+        'Event mendatang',
     ],
     ROLE_COMMITTEE => [
         '/committee/dashboard',
@@ -1101,9 +1249,10 @@ foreach ([
     if ($dashboardRole === ROLE_STUDENT) {
         $assert(
             str_contains($roleDashboardHtml, '/public/assets/css/dashboard-portals.css')
-                && str_contains($roleDashboardHtml, 'class="sp-header')
+                && str_contains($roleDashboardHtml, 'class="ch-sidebar')
+                && str_contains($roleDashboardHtml, 'Pendaftaran terbaru')
                 && str_contains($roleDashboardHtml, $honestState),
-            'Mahasiswa dashboard renders the current student portal and event search'
+            'Mahasiswa dashboard renders shared CampusHub navigation and database-backed event activity'
         );
     } else {
         $assert(
@@ -1153,6 +1302,69 @@ foreach ($dashboardRoleRoutes as $role => $path) {
             && str_contains($roleDashboardHtml, 'id="main-content"')
             && str_contains($roleDashboardHtml, 'Lewati ke konten utama'),
         $role . ' dashboard provides a scoped role theme and skip navigation'
+    );
+}
+
+$studentSidebar = file_get_contents(dirname(__DIR__) . '/includes/student/sidebar.php');
+$studentRoutes = file_get_contents(dirname(__DIR__) . '/routes/web.php');
+$studentOperationsModel = file_get_contents(dirname(__DIR__) . '/app/Models/StudentOperationsModel.php');
+$assert(
+    is_string($studentSidebar)
+        && is_string($studentRoutes)
+        && is_string($studentOperationsModel)
+        && str_contains($studentSidebar, 'Jelajahi Event')
+        && str_contains($studentSidebar, 'Pendaftaran Saya')
+        && str_contains($studentSidebar, 'Jadwal Saya')
+        && str_contains($studentSidebar, 'Sertifikat Saya')
+        && str_contains($studentSidebar, 'Profil')
+        && str_contains($studentRoutes, "'/student/registration/create'")
+        && str_contains($studentRoutes, "'/student/registration/cancel'")
+        && str_contains($studentRoutes, "'/certificates/download'")
+        && str_contains($studentOperationsModel, 'p.id_user = ?')
+        && str_contains($studentOperationsModel, 'e.tanggal >= CURRENT_DATE()'),
+    'Student portal defines all six menus, database workflows, and own-account queries'
+);
+$certificateAccessModel = file_get_contents(dirname(__DIR__) . '/app/Models/CertificateAccessModel.php');
+$rootHtaccess = file_get_contents(dirname(__DIR__) . '/.htaccess');
+$assert(
+    is_string($certificateAccessModel)
+        && str_contains($certificateAccessModel, 'p.id_user = ?')
+        && str_contains($certificateAccessModel, 'e.id_panitia = ?')
+        && str_contains($certificateAccessModel, 's.status =')
+        && str_contains($certificateAccessModel, 'Terbit')
+        && is_string($rootHtaccess)
+        && str_contains($rootHtaccess, 'assets/uploads/sertifikat'),
+    'certificate downloads enforce role ownership and block direct public file access'
+);
+$certificateGuest = $dashboardRouter->dispatch(new Request('GET', '/certificates/download?id=1'));
+$assert(
+    $certificateGuest->status() === 302
+        && ($certificateGuest->headers()['Location'] ?? '') === '/login',
+    'certificate download route requires an authenticated session'
+);
+$studentProtectedPaths = [
+    ['GET', '/student/events'],
+    ['GET', '/student/events/detail'],
+    ['GET', '/student/registrations'],
+    ['GET', '/student/schedule'],
+    ['GET', '/student/certificates'],
+    ['GET', '/student/profile'],
+    ['POST', '/student/registration/create'],
+    ['POST', '/student/registration/cancel'],
+    ['POST', '/student/profile'],
+];
+foreach ($studentProtectedPaths as [$method, $path]) {
+    $studentRoleGuard = $dashboardRouter->dispatch(new Request(
+        $method,
+        $path,
+        [],
+        [],
+        $dashboardSessions[ROLE_ADMIN]
+    ));
+    $assert(
+        $studentRoleGuard->status() === 302
+            && ($studentRoleGuard->headers()['Location'] ?? '') === '/admin/dashboard',
+        'Admin cannot enter Student-only route: ' . $path
     );
 }
 
@@ -1342,7 +1554,134 @@ $assert(
     'POST logout validates CSRF and invalidates the authenticated session'
 );
 
-$expectedTests = 141;
+$accountLookup = static function (int $userId, Request $_request): ?array {
+    return match ($userId) {
+        701 => ['role' => ROLE_ADMIN, 'status' => STATUS_ACTIVE],
+        702 => ['role' => ROLE_STUDENT, 'status' => STATUS_ACTIVE],
+        703 => ['role' => ROLE_ADMIN, 'status' => STATUS_INACTIVE],
+        704 => throw new RuntimeException('Database unavailable.'),
+        default => null,
+    };
+};
+$currentAccountMiddleware = new \CampusHub\Http\Middleware\AuthMiddleware($accountLookup);
+$activeAccountResponse = $currentAccountMiddleware->handle(
+    new Request('GET', '/protected', [], [], [
+        'is_login' => true,
+        'user_id' => 701,
+        'role' => ROLE_ADMIN,
+    ]),
+    static fn (): Response => Response::text('protected')
+);
+$assert(
+    $activeAccountResponse->status() === 200,
+    'auth middleware accepts an active account with a matching current role'
+);
+
+foreach ([
+    702 => ROLE_ADMIN,
+    703 => ROLE_ADMIN,
+    705 => ROLE_STUDENT,
+] as $userId => $sessionRole) {
+    $_SESSION = ['is_login' => true, 'user_id' => $userId, 'role' => $sessionRole];
+    $invalidAccountResponse = $currentAccountMiddleware->handle(
+        new Request('GET', '/protected', [], [], $_SESSION),
+        static fn (): Response => Response::text('protected')
+    );
+    $assert(
+        $invalidAccountResponse->status() === 302
+            && ($invalidAccountResponse->headers()['Location'] ?? '') === '/login'
+            && !isset($_SESSION['user_id']),
+        'auth middleware invalidates changed, disabled, or missing accounts'
+    );
+}
+
+$_SESSION = ['is_login' => true, 'user_id' => 704, 'role' => ROLE_ADMIN];
+$databaseErrorResponse = $currentAccountMiddleware->handle(
+    new Request('GET', '/protected', [], [], $_SESSION),
+    static fn (): Response => Response::text('protected')
+);
+$assert(
+    $databaseErrorResponse->status() === 503
+        && isset($_SESSION['user_id']),
+    'auth middleware fails closed when the account store is unavailable'
+);
+
+$adminOperations = new \CampusHub\Models\AdminOperationsModel();
+$documentationPage = $adminOperations->documentation([], 25, 0);
+$assert(
+    isset($documentationPage['items'], $documentationPage['total'])
+        && count($documentationPage['items']) <= 25
+        && $documentationPage['total'] >= count($documentationPage['items']),
+    'Admin documentation query returns a bounded page and total count'
+);
+$certificatePage = $adminOperations->certificates([], 25, 0);
+$assert(
+    isset($certificatePage['items'], $certificatePage['total'])
+        && count($certificatePage['items']) <= 25
+        && $certificatePage['total'] >= count($certificatePage['items']),
+    'Admin certificate query returns a bounded page and total count'
+);
+
+$adminPaginationData = [
+    'userName' => 'Admin Test',
+    'role' => ROLE_ADMIN,
+    'photo' => 'default.png',
+    'activeAdminSection' => 'documentation',
+    'events' => [],
+    'filters' => ['q' => 'workshop', 'event' => '2', 'from' => '', 'to' => ''],
+    'flash' => null,
+    'total' => 51,
+    'page' => 2,
+    'pages' => 3,
+    'items' => [[
+        'id_dokumentasi' => 1,
+        'id_event' => 2,
+        'foto' => 'documentation.jpg',
+        'keterangan' => 'Dokumentasi',
+        'created_at' => '2026-01-01 10:00:00',
+        'judul' => 'Event Test',
+        'nama_panitia' => 'Panitia Test',
+    ]],
+];
+$documentationPaginationView = \CampusHub\Core\View::render(
+    'admin/operations/documentation',
+    $adminPaginationData
+);
+$certificatePaginationView = \CampusHub\Core\View::render(
+    'admin/operations/certificates',
+    array_replace($adminPaginationData, [
+        'activeAdminSection' => 'certificates',
+        'filters' => [
+            'q' => 'workshop',
+            'event' => '2',
+            'from' => '',
+            'to' => '',
+            'status' => 'Dicabut',
+        ],
+        'items' => [[
+            'id_sertifikat' => 1,
+            'file_sertifikat' => 'certificate.pdf',
+            'status' => 'Dicabut',
+            'tanggal_upload' => '2026-01-01 10:00:00',
+            'nama' => 'Peserta Test',
+            'nim' => '12345',
+            'email' => 'peserta@example.test',
+            'id_event' => 2,
+            'judul' => 'Event Test',
+            'status_hadir' => 'Hadir',
+            'waktu_checkin' => '2026-01-01 09:00:00',
+        ]],
+    ])
+);
+$assert(
+    str_contains($documentationPaginationView, '?q=workshop&amp;event=2&amp;page=1')
+        && str_contains($documentationPaginationView, 'Halaman 2 dari 3')
+        && str_contains($certificatePaginationView, '?q=workshop&amp;event=2&amp;status=Dicabut&amp;page=3')
+        && str_contains($certificatePaginationView, 'Halaman 2 dari 3'),
+    'Admin documentation and certificate pagination preserve active filters'
+);
+
+$expectedTests = 175;
 echo sprintf("\n%d/%d tests passed.\n", $passed, $expectedTests);
 $exitCode = $failed === 0 && $passed === $expectedTests ? 0 : 1;
 ob_end_flush();

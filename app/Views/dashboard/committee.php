@@ -2,9 +2,9 @@
 
 $pageTitle = 'Dashboard Panitia | ' . APP_NAME;
 $pageCSS = ['dashboard-portals.css'];
-require dirname(__DIR__, 3) . '/includes/head.php';
+$activeCommitteeSection = 'dashboard';
+require dirname(__DIR__, 3) . '/includes/committee/layout-start.php';
 $committeeName = is_string($userName ?? null) && trim($userName) !== '' ? trim($userName) : 'Panitia';
-$userAvatar = is_string($userAvatar ?? null) ? $userAvatar : '/public/assets/images/image.png';
 $stats = is_array($stats ?? null) ? $stats : [
     'events' => 0,
     'participants_today' => 0,
@@ -13,48 +13,6 @@ $stats = is_array($stats ?? null) ? $stats : [
 $events = is_array($events ?? null) ? $events : [];
 $documentation = is_array($documentation ?? null) ? $documentation : [];
 ?>
-
-<body class="ch-dashboard ch-dashboard--committee">
-<a class="ch-skip-link" href="#main-content">Lewati ke konten utama</a>
-
-<div class="ch-committee-shell">
-    <aside class="ch-committee-rail">
-        <a class="ch-brand ch-brand--committee" href="/committee/dashboard" aria-label="CampusHub, dashboard panitia">
-            <img src="/public/assets/images/logo.png" alt="" width="44" height="44">
-            <span>
-                <strong>CampusHub</strong>
-                <small>Ruang kerja panitia</small>
-            </span>
-        </a>
-        <nav class="ch-committee-nav" aria-label="Navigasi panitia">
-            <a class="is-active" href="/committee/dashboard" aria-current="page">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
-                <span>Ringkasan</span>
-            </a>
-        </nav>
-        <div class="ch-committee-account">
-            <span class="ch-account-label">AKUN PANITIA</span>
-            <strong><?= \CampusHub\Core\View::escape($committeeName) ?></strong>
-            <a href="/logout.php">Keluar dari akun <span aria-hidden="true">↗</span></a>
-        </div>
-    </aside>
-
-    <main class="ch-committee-main" id="main-content">
-        <header class="ch-committee-header">
-            <div>
-                <span class="ch-eyebrow">CAMPUSHUB / PANITIA</span>
-                <p>Dashboard operasional</p>
-            </div>
-            <div class="ch-committee-identity">
-                <img src="<?= \CampusHub\Core\View::escape($userAvatar) ?>"
-                     alt="Foto profil <?= \CampusHub\Core\View::escape($committeeName) ?>"
-                     width="40" height="40">
-                <span>
-                    <strong><?= \CampusHub\Core\View::escape($committeeName) ?></strong>
-                    <small>Panitia</small>
-                </span>
-            </div>
-        </header>
 
         <div class="ch-committee-content">
             <section class="ch-committee-welcome">
@@ -74,7 +32,7 @@ $documentation = is_array($documentation ?? null) ? $documentation : [];
                         <span class="ch-eyebrow">RINGKASAN</span>
                         <h2 id="committee-overview-title">Aktivitas kepanitiaan</h2>
                     </div>
-                    <span class="ch-section-tag">Menunggu data</span>
+                    <span class="ch-section-tag">Penugasan Anda</span>
                 </div>
 
                 <div class="ch-committee-overview-grid">
@@ -111,11 +69,26 @@ $documentation = is_array($documentation ?? null) ? $documentation : [];
                 </div>
             </section>
 
+            <section class="ch-committee-section" aria-label="Akses cepat">
+                <div class="ch-section-heading">
+                    <div>
+                        <span class="ch-eyebrow">AKSES CEPAT</span>
+                        <h2>Operasional event</h2>
+                    </div>
+                </div>
+                <div class="ch-committee-shortcuts">
+                    <a class="btn btn-outline" href="/committee/participants">Peserta</a>
+                    <a class="btn btn-outline" href="/committee/attendance">Kehadiran</a>
+                    <a class="btn btn-outline" href="/committee/documentation">Dokumentasi</a>
+                    <a class="btn btn-outline" href="/committee/certificates">Sertifikat</a>
+                </div>
+            </section>
+
             <section class="ch-committee-section" aria-labelledby="committee-operations-title">
                 <div class="ch-section-heading">
                     <div>
                         <span class="ch-eyebrow">OPERASIONAL</span>
-                        <h2 id="committee-operations-title">Event yang ditugaskan</h2>
+                        <h2 id="committee-operations-title">Event mendatang</h2>
                     </div>
                     <span class="ch-section-tag">Ruang panitia</span>
                 </div>
@@ -127,7 +100,7 @@ $documentation = is_array($documentation ?? null) ? $documentation : [];
                         </span>
                         <div>
                             <h3>Belum ada data event</h3>
-                            <p>Event dan tanggung jawab kepanitiaan akan muncul di sini setelah Anda ditugaskan ke event.</p>
+                            <p>Event tampil setelah Admin memilih akun Anda pada kolom Panitia di detail event. Keanggotaan organisasi saja tidak otomatis memberi akses.</p>
                         </div>
                     </div>
                 <?php else: ?>
@@ -139,9 +112,13 @@ $documentation = is_array($documentation ?? null) ? $documentation : [];
                             $approvedParticipants = (int) ($event['approved_participants'] ?? 0);
                             ?>
                             <article class="ch-committee-event">
-                                <span class="ch-operation-icon" aria-hidden="true">
-                                    <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>
-                                </span>
+                                <?php if ($event['poster_url'] !== null) : ?>
+                                    <img class="ch-committee-event-thumbnail" src="<?= \CampusHub\Core\View::escape($event['poster_url']) ?>" alt="Poster <?= \CampusHub\Core\View::escape((string) $event['judul']) ?>" loading="lazy">
+                                <?php else : ?>
+                                    <span class="ch-operation-icon" aria-hidden="true">
+                                        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>
+                                    </span>
+                                <?php endif; ?>
                                 <div class="ch-committee-event-main">
                                     <div class="ch-committee-event-heading">
                                         <h3><?= \CampusHub\Core\View::escape((string) ($event['judul'] ?? 'Event')) ?></h3>
@@ -151,15 +128,18 @@ $documentation = is_array($documentation ?? null) ? $documentation : [];
                                         <?php if ($eventDate !== ''): ?>
                                             <span><?= \CampusHub\Core\View::escape($eventDate) ?></span>
                                         <?php endif; ?>
+                                        <span><?= \CampusHub\Core\View::escape((string) ($event['nama_organisasi'] ?? '')) ?></span>
                                         <span><?= \CampusHub\Core\View::escape((string) ($event['lokasi'] ?? 'Lokasi belum ditentukan')) ?></span>
-                                        <span><?= $approvedParticipants ?> peserta disetujui</span>
+                                        <span><?= (int) ($event['total_registrations'] ?? 0) ?> pendaftar · <?= $approvedParticipants ?> disetujui</span>
                                     </div>
+                                    <p class="ch-committee-event-description-preview"><?= \CampusHub\Core\View::escape(mb_strimwidth(trim(strip_tags((string) ($event['deskripsi'] ?? ''))), 0, 145, '…', 'UTF-8')) ?></p>
                                 </div>
+                                <a class="btn btn-outline btn-sm" href="/committee/events/detail?id=<?= (int) ($event['id_event'] ?? 0) ?>">Detail</a>
                             </article>
                         <?php endforeach; ?>
                     </div>
                     <?php if (count($events) === 6): ?>
-                        <p class="ch-committee-list-note">Menampilkan 6 event terbaru yang ditugaskan kepada Anda.</p>
+                        <p class="ch-committee-list-note">Menampilkan hingga 6 jadwal event mendatang yang ditugaskan kepada Anda.</p>
                     <?php endif; ?>
                 <?php endif; ?>
             </section>
@@ -172,6 +152,7 @@ $documentation = is_array($documentation ?? null) ? $documentation : [];
                                 <span class="ch-eyebrow">ARSIP KEGIATAN</span>
                                 <h2>Dokumentasi terbaru</h2>
                             </div>
+                            <a class="btn btn-outline btn-sm" href="/committee/documentation">Kelola</a>
                             <span class="ch-committee-panel-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path></svg>
                             </span>
@@ -247,15 +228,7 @@ $documentation = is_array($documentation ?? null) ? $documentation : [];
 
             <div class="ch-committee-note" role="status">
                 <span class="ch-notice-icon" aria-hidden="true">i</span>
-                <p>Ringkasan dan progres di atas dihitung dari event yang ditugaskan kepada akun panitia ini.</p>
+                <p>Ringkasan dan progres di atas dihitung hanya dari event yang ditugaskan kepada akun panitia ini.</p>
             </div>
-
-            <footer class="ch-page-footer">
-                <span>CampusHub <span aria-hidden="true">·</span> Panitia</span>
-                <span>Bekerja bersama untuk kegiatan kampus.</span>
-            </footer>
         </div>
-    </main>
-</div>
-</body>
-</html>
+<?php require dirname(__DIR__, 3) . '/includes/committee/layout-end.php'; ?>
